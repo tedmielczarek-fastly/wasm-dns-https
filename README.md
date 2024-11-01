@@ -7,20 +7,20 @@ This is a personalized experiement on [Fastly Compute](https://www.fastly.com/pr
 Right now the code works in the following way:
 
 1. The request is received via a HTTPS request (`GET` or `POST`) on the edge, and following [RFC8484](https://datatracker.ietf.org/doc/html/rfc8484).
-2. The compute code blocks domains found in the `blocklist.se` file and does not send the request upstream and then returns HTTP Status Code `418` because it's fun and a header that signifies `"BLOCKED"`. 
+2. The compute code blocks domains found in the `blocklist.se` file and does not send the request upstream and then returns HTTP Status Code `418` because it's fun 🫖. 
 3. A domain not found in the blocklist is processed to (for now) an upstream server via HTTPS then returns to the client successfully if it exists via a forward DNS packet from the upstream Name Server (NS).
 
-Most events are logged to a [HoneyComb](https://honeycomb.io) instance, I am especially interested in learning how to optimize this to keep resoponses low. 
+Most events are logged to a [HoneyComb](https://honeycomb.io) instance, I am especially interested in learning how to optimize this to keep resoponse times low. 
 
 ### Analysis 
 
 So far this has been working really well, I have not switched it over to my daily driver yet but here's some examples of a test site (thanks, [Can You Block It](https://canyoublockit.com)!) and it's load times: 
 
-![](./docs/load_analysis.png)
+![](./docs/load_analysis-with-blocking.png)
 
-As well a a full trace of the network requsts: 
+Versus without: 
 
-![](./docs/example_trace.png)
+![](./docs/load_analysis-without.png)
 
 ## Limitations
 
@@ -36,4 +36,6 @@ Right now there's a couple limitations to this:
 
 ## Future Work 
 
-The code is not exactly production ready, for example there's no error handling at the moment. Check in on the issues here, I plan to keep working on this until I can get it ready for use as my daily driver 😃!
+The code is not exactly production ready, I want to make sure there is a good performance analysis on the application and update some privacy debt I took out.
+
+Check in on the issues here, I plan to keep working on this until I can get it ready for use as my daily driver 😃!
