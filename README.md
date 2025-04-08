@@ -22,6 +22,14 @@ As well a a full trace of the network requsts:
 
 ![](./docs/example_trace.png)
 
+## Testing
+
+Assuming you have run this service locally using `fastly compute serve`, you can test using a sufficiently-new version of `dig` like so:
+
+```
+dig +all +http-plain -p 7676 @127.0.0.1 <hostname>
+```
+
 ## Limitations
 
 Right now there's a couple limitations to this: 

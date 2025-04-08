@@ -91,7 +91,7 @@ fn main(req: Request) -> Result<Response, Error> {
         Method::GET | Method::POST => {
             match req.get_path() {
                 x if x.starts_with("/dns-query") => {
-                    let body = match *req.get_method() {
+                    let req_body = match *req.get_method() {
                         Method::GET => {
                             log_to_backend(
                                 Level::Info,
@@ -138,7 +138,7 @@ fn main(req: Request) -> Result<Response, Error> {
                         _ => unreachable!(),
                     };
 
-                    let dns_request = dns_parser::Packet::parse(&body)?;
+                    let dns_request = dns_parser::Packet::parse(&req_body)?;
                     let urls = dns_request
                         .questions
                         .iter()
@@ -186,7 +186,9 @@ fn main(req: Request) -> Result<Response, Error> {
                             ]),
                         )?;
 
-                        let bytes = body.into_bytes();
+                        let mut bytes = body.into_bytes();
+                        // Copy the request ID into the response
+                        bytes[..2].copy_from_slice(&req_body[..2]);
 
                         return Ok(Response::from_status(StatusCode::OK)
                             .with_header("Content-Type", "application/dns-message")
@@ -228,7 +230,9 @@ fn main(req: Request) -> Result<Response, Error> {
                     ]);
                     additional_info.extend(headers);
 
-                    let bytes = response.into_body().into_bytes();
+                    let mut bytes = response.into_body().into_bytes();
+                    // Copy the request ID into the response
+                    bytes[..2].copy_from_slice(&req_body[..2]);
 
                     log_to_backend(
                         Level::Info,
