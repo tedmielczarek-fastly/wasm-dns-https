@@ -19,7 +19,8 @@ use std::{
 const GOOGLEDNS: &str = "https://dns.google/resolve?name=";
 const DNSBINARY: &str = "&ct=application/dns-message";
 const BACKEND: &str = "dns_google";
-const BLOCKLIST: &[u8; 5136805] = include_bytes!("./blocklist.se");
+
+include!(concat!(env!("OUT_DIR"), "/blocklist.rs"));
 
 #[derive(Debug, Serialize)]
 struct LogFormat {
@@ -90,11 +91,6 @@ fn main(req: Request) -> Result<Response, Error> {
         Method::GET | Method::POST => {
             match req.get_path() {
                 x if x.starts_with("/dns-query") => {
-                    // load the block list
-                    // TODO perf
-                    // I'd like to store this list in a KV-store
-                    let block_list_urls: Vec<&str> = serde_json::from_slice(BLOCKLIST)?;
-
                     let body = match *req.get_method() {
                         Method::GET => {
                             log_to_backend(
@@ -150,7 +146,7 @@ fn main(req: Request) -> Result<Response, Error> {
                         .collect::<Vec<String>>();
 
                     // For now just dead match the domain with that is requested
-                    if block_list_urls.contains(&urls[0].as_str()) {
+                    if BLOCKED_HOSTS.contains(&urls[0].as_str()) {
                         log_to_backend(
                             Level::Info,
                             "Blocked request".to_string(),
