@@ -27,7 +27,7 @@ As well a a full trace of the network requsts:
 Assuming you have run this service locally using `fastly compute serve`, you can test using a sufficiently-new version of `dig` like so:
 
 ```
-dig +all +http-plain -p 7676 @127.0.0.1 <hostname>
+dig +http-plain -p 7676 @127.0.0.1 <hostname>
 ```
 
 ## Limitations
